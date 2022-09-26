@@ -29,3 +29,27 @@ router.post('/', async (req, res) => {
     movie = await movie.save();
     res.send(movie);
 });
+
+router.put('/:id', async(req, res) => {
+    const {error} = validate(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
+
+    const movie = await Movie.findByIdAndUpdate(req.params.id);
+    if(!movie) return res.status(404).send('Movie with the given ID does not exist');
+
+    res.send(movie);
+});
+
+router.delete('/:id', async (req, res) => {
+    const movie = await Movie.findByIdAndDelete(req.params.id);
+    if(!movie) res.status(404).send('Does not exist movie with the given ID');
+    res.send(movie);
+});
+
+router.get('/:id', async (req, res) => {
+    const movie = await Movie.findById(req.params.id);
+    if(!movie) return res.status(404).send('Does not exist movie with the given ID');
+    res.send(movie);
+});
+
+module.exports = router;
