@@ -1,3 +1,7 @@
+require('express-async-errors');
+const winston = require('winston');
+require('winston-mongodb');
+const error = require('./middleware/error');
 const config = require('config');
 const mongoose = require('mongoose');
 const genres = require('./routes/genres');
@@ -6,10 +10,19 @@ const movies = require('./routes/movies')
 const rentals = require('./routes/rentals');
 const users = require('./routes/users');
 const auth = require('./routes/auth');
+const uri = 'mongodb://localhost:27017/vidly'
 
-
+winston.add(new winston.transports.File({ filename: 'logfile.log' }))
+winston.add(new winston.transports.MongoDB({
+  db:uri,
+  options: {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  family: 4,}
+}));
 
 const express = require('express');
+const { restart } = require('nodemon');
 const app = express();
 
 if(!config.get('jwtPrivateKey')) {
@@ -17,7 +30,6 @@ if(!config.get('jwtPrivateKey')) {
   process.exit(1);
 }
 
-const uri = 'mongodb://localhost:27017/vidly'
 mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -33,6 +45,9 @@ app.use('/api/movies', movies)
 app.use('/api/rentals', rentals);
 app.use('/api/users', users);
 app.use('/api/auth', auth);
+
+// error middleware
+app.use(error);
 
 
 

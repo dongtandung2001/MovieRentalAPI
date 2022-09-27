@@ -5,10 +5,15 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+
+
+// error handling by creating async middleware
+
+router.get('/', (async (req, res) => {
+  throw new Error('Could not get the genres');
   const genres = await Genre.find().sort('name');
   res.send(genres);
-});
+}));
 
 // auth = authenticate users with given token to use
 router.post('/', auth,  async (req, res) => {
