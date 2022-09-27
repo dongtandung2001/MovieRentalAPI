@@ -1,3 +1,6 @@
+const config = require('config');
+const jwt = require('jsonwebtoken');
+const auth = require('../middleware/auth');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const {User, validate} = require('../models/user');
@@ -27,10 +30,17 @@ router.post('/', async (req, res) => {
     // use Lodash JS
     // return new object with chosen properties
 
-    res.send(_.pick(user, ['_id','name', 'email']));
+    // create token return to response header
+    const token = user.generateAuthToken();
+    res.header('x-auth-token', token).send(_.pick(user, ['_id','name', 'email']));
 
     
 });
 
+// get current user
+router.get('/me', auth, async (req, res) => {
+    const user = await User.findById(req.user._id).select('-password');
+    res.send(user);
+});
 
 module.exports = router;
