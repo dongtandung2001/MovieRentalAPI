@@ -1,9 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const {Movie, validate} = require('../models/movie');
-const {Genre} = require('../models/genre');
+const { Movie, validate } = require('../models/movie');
+const { Genre } = require('../models/genre');
 const router = express.Router();
+const ObjectId = mongoose.Types.ObjectId;
 
 router.get('/', async (req, res) => {
     const movies = await Movie.find().sort('title');
@@ -11,11 +12,14 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const {error} = validate(req.body);
-    if(error) return res.status(400).send(error.details[0].message);
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-    const genre = Genre.findById(req.body.genreId);
-    if(!genre) return res.status(404).send('Does not exist genre with the given ID...');
+
+    const genre = await Genre.findById(req.body.genreId);
+
+    if (!genre) return res.status(404).send('Does not exist genre with the given ID...');
+
 
     let movie = new Movie({
         title: req.body.title,
@@ -30,25 +34,28 @@ router.post('/', async (req, res) => {
     res.send(movie);
 });
 
-router.put('/:id', async(req, res) => {
-    const {error} = validate(req.body);
-    if(error) return res.status(400).send(error.details[0].message);
+router.put('/:id', async (req, res) => {
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-    const movie = await Movie.findByIdAndUpdate(req.params.id);
-    if(!movie) return res.status(404).send('Movie with the given ID does not exist');
-
+    const movie = await Movie.findByIdAndUpdate(req.params.id, { ...req.body });
+    if (!movie) return res.status(404).send('Movie with the given ID does not exist');
+    console.log(movie);
     res.send(movie);
 });
 
 router.delete('/:id', async (req, res) => {
     const movie = await Movie.findByIdAndDelete(req.params.id);
-    if(!movie) res.status(404).send('Does not exist movie with the given ID');
+    if (!movie) res.status(404).send('Does not exist movie with the given ID');
     res.send(movie);
 });
 
 router.get('/:id', async (req, res) => {
+    // if (!ObjectId.isValid(req.query.id)) {
+    //     return res.status(400).send('Invalid ID');
+    // }
     const movie = await Movie.findById(req.params.id);
-    if(!movie) return res.status(404).send('Does not exist movie with the given ID');
+    if (!movie) return res.status(404).send('Does not exist movie with the given ID');
     res.send(movie);
 });
 

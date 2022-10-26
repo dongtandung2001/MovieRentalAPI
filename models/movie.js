@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {genreSchema} = require('../models/genre');
+const { genreSchema } = require('../models/genre');
 
 const Joi = require('joi');
 
@@ -11,7 +11,7 @@ const movieSchema = mongoose.Schema({
         minLength: 5,
         maxLength: 255,
 
-    }, 
+    },
 
     numberInStock: {
         type: Number,
@@ -19,7 +19,7 @@ const movieSchema = mongoose.Schema({
         min: 0,
     },
     dailyRentalRate: {
-        type: Number, 
+        type: Number,
         required: true,
         min: 0,
     },

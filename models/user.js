@@ -5,24 +5,24 @@ const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
   name: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 50,
-  }, 
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 50,
+  },
 
   email: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 255,
-      unique: true,
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 255,
+    unique: true,
   },
   password: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 255,
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 255,
   },
   isAdmin: {
     type: Boolean,
@@ -32,8 +32,8 @@ const userSchema = new mongoose.Schema({
 
 // encapsulating generating token in mongoose models to sync
 // so that update will happen at all places.
-userSchema.methods.generateAuthToken = function() {
-  const token = jwt.sign({_id:this._id, isAdmin: this.isAdmin}, config.get('jwtPrivateKey'));
+userSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
   return token;
 }
 
@@ -51,5 +51,5 @@ function validateUser(user) {
   return schema.validate(user);
 }
 
-exports.User = User; 
+exports.User = User;
 exports.validate = validateUser;

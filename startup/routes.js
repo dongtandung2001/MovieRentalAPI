@@ -8,7 +8,8 @@ const rentals = require('../routes/rentals');
 const users = require('../routes/users');
 const auth = require('../routes/auth');
 
-module.exports = function(app) {
+
+module.exports = function (app) {
     app.use(express.json());
     app.use('/api/genres', genres);
     app.use('/api/customers', customers);
@@ -16,6 +17,7 @@ module.exports = function(app) {
     app.use('/api/rentals', rentals);
     app.use('/api/users', users);
     app.use('/api/auth', auth);
+
 
     // error middleware
     app.use(error);
