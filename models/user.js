@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const mongoose = require('mongoose');
-const config = require('config');
-const jwt = require('jsonwebtoken');
+const Joi = require("joi");
+const mongoose = require("mongoose");
+const config = require("config");
+const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -26,20 +26,25 @@ const userSchema = new mongoose.Schema({
   },
   isAdmin: {
     type: Boolean,
-  }
-
+  },
 });
 
 // encapsulating generating token in mongoose models to sync
 // so that update will happen at all places.
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
+  const token = jwt.sign(
+    {
+      _id: this._id,
+      isAdmin: this.isAdmin,
+      name: this.name,
+      email: this.email,
+    },
+    config.get("jwtPrivateKey")
+  );
   return token;
-}
+};
 
-const User = mongoose.model('User', userSchema);
-
-
+const User = mongoose.model("User", userSchema);
 
 function validateUser(user) {
   const schema = Joi.object({
