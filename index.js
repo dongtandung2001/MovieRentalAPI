@@ -14,7 +14,6 @@ require("./startup/logging")();
 // startup config
 require("./startup/config")();
 
-app.use(cors());
 // throw new Error('Error');
 const port = config.get("port") || 3000;
 app.listen(port, () => winston.info(`Listening on port ${port}...`));
