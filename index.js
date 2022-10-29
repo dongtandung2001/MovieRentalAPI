@@ -16,4 +16,6 @@ require("./startup/config")();
 
 // throw new Error('Error');
 const port = config.get("port") || 3000;
-app.listen(port, () => winston.info(`Listening on port ${port}...`));
+const server = app.listen(port, () => winston.info(`Listening on port ${port}...`));
+
+module.exports = server;

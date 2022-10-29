@@ -1,3 +1,4 @@
 node_modules/
 *.log
 dbHost/
+coverage/

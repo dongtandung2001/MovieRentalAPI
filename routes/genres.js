@@ -3,7 +3,10 @@ const admin = require("../middleware/admin");
 const { Genre, validate } = require("../models/genre");
 const mongoose = require("mongoose");
 const express = require("express");
+const validateObjectId = require("../middleware/validateObjectId");
 const router = express.Router();
+
+const auth = require('../middleware/auth');
 
 // error handling by creating async middleware
 
@@ -13,7 +16,7 @@ router.get("/", async (req, res) => {
 });
 
 // auth = authenticate users with given token to use
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   // authenticate users to use this endpoint
   // extract token from req.header
 
@@ -44,7 +47,7 @@ router.put("/:id", async (req, res) => {
   res.send(genre);
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", validateObjectId, async (req, res) => {
   const genre = await Genre.findByIdAndRemove(req.params.id);
 
   if (!genre)
@@ -53,7 +56,7 @@ router.delete("/:id", async (req, res) => {
   res.send(genre);
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateObjectId, async (req, res) => {
   const genre = await Genre.findById(req.params.id);
 
   if (!genre)
