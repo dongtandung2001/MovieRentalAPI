@@ -21,14 +21,12 @@ module.exports = function () {
   // winston.ExceptionHanlde is similar to ^
 
   const uri = config.get('db');
-  console.log('db', db);
   winston.add(new winston.transports.File({ filename: 'logfile.log' }));
   winston.add(new winston.transports.MongoDB({
     db: uri,
     options: {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      family: 4,
     }
   }));
 
