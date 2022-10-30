@@ -1,4 +1,5 @@
 const winston = require('winston');
+const config = require('config');
 require('winston-mongodb');
 
 module.exports = function () {
@@ -19,7 +20,8 @@ module.exports = function () {
 
   // winston.ExceptionHanlde is similar to ^
 
-  const uri = 'mongodb://localhost:27017/vidly';
+  const uri = config.get('db');
+  console.log('db', db);
   winston.add(new winston.transports.File({ filename: 'logfile.log' }));
   winston.add(new winston.transports.MongoDB({
     db: uri,
