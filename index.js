@@ -5,7 +5,7 @@ const config = require("config");
 const cors = require("cors");
 const app = express();
 // startup cors
-// app.use(cors());
+app.use(cors());
 require('./startup/cors')(app);
 // startup routes
 require("./startup/routes")(app);
