@@ -17,18 +17,40 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     required: true,
     minlength: 5,
     maxlength: 255
-  }
+  },
+  SSN: {
+    type: String,
+    required: true,
+    default: "xxx-xx-xxxx",
+  },
+  rents: [new mongoose.Schema({
+    movie: new mongoose.Schema({
+      title: {
+        type: String,
+        required: true,
+      }
+    }),
+    dateOut: {
+      type: Date,
+      required: true,
+      default: Date.now
+    },
+    dateReturned: {
+      type: Date,
+      default: Date.now + 30,
+    },
+  })]
 }));
 
 function validateCustomer(customer) {
   const schema = Joi.object({
     name: Joi.string().min(5).max(50).required(),
     phone: Joi.string().min(5).max(50).required(),
-    isGold: Joi.boolean()
+    SSN: Joi.string(),
   });
 
   return schema.validate(customer);
 }
 
-exports.Customer = Customer; 
+exports.Customer = Customer;
 exports.validate = validateCustomer;

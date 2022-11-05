@@ -7,6 +7,7 @@ const { User, validate } = require("../models/user");
 const _ = require("lodash");
 
 const express = require("express");
+const { Customer } = require("../models/customer");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -18,7 +19,7 @@ router.post("/", async (req, res) => {
 
   // encrypt password using 'bcrypt'
 
-  user = new User(_.pick(req.body, ["name", "email", "password"]));
+  user = new User(_.pick(req.body, ["email", "password"]));
 
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
@@ -34,8 +35,27 @@ router.post("/", async (req, res) => {
   res
     .header("x-auth-token", token)
     .header("access-control-expose-headers", "x-auth-token")
-    .send(_.pick(user, ["_id", "name", "email"]));
+    .send(_.pick(user, ["_id", "email"]));
 });
+
+router.put("/:id", async (req, res) => {
+  // const { error } = validate(req.body);
+  // if (error) return res.status(400).send(error.details[0].message);
+
+  let user = await User.findById(req.params.id);
+  if (!user)
+    return res.status(404).send("User with the given ID does not exist");
+
+  user.customer = new Customer({
+    _id: req.body._id,
+  })
+
+  await user.save();
+
+
+  res.send(user);
+
+})
 
 // get current user
 router.get("/me", auth, async (req, res) => {
