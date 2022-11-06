@@ -23,7 +23,7 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     required: true,
     default: "xxx-xx-xxxx",
   },
-  rents: [new mongoose.Schema({
+  rents: [{
     movie: new mongoose.Schema({
       title: {
         type: String,
@@ -33,13 +33,11 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     dateOut: {
       type: Date,
       required: true,
-      default: Date.now
     },
     dateReturned: {
       type: Date,
-      default: Date.now + 30,
     },
-  })]
+  }]
 }));
 
 function validateCustomer(customer) {

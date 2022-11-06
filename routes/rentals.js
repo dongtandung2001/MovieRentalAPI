@@ -7,7 +7,7 @@ const express = require('express');
 const router = express.Router();
 const config = require('config');
 
-Fawn.init('mongodb://localhost/vidly');
+const { connection } = require('../startup/db');
 
 router.get('/', async (req, res) => {
   const rentals = await Rental.find().sort('-dateOut');
@@ -26,6 +26,10 @@ router.post('/', async (req, res) => {
 
   if (movie.numberInStock === 0) return res.status(400).send('Movie not in stock.');
 
+  console.log('filter', customer.rents.filter(rent => rent.movie._id.toString() === movie._id.toString()));
+  if (customer.rents.filter(rent => rent.movie._id.toString() === movie._id.toString()).length === 1) {
+    return res.status(400).send('You already rented this movie');
+  }
   let rental = new Rental({
     customer: {
       _id: customer._id,
@@ -39,18 +43,37 @@ router.post('/', async (req, res) => {
     }
   });
 
+  const session = await connection.startSession();
   try {
-    new Fawn.Task()
-      .save('rentals', rental)
-      .update('movies', { _id: movie._id }, {
-        $inc: { numberInStock: -1 }
-      })
-      .run();
+    session.startTransaction();
+
+    await rental.save({ session });
+    await movie.update({ $inc: { numberInStock: -1 } }, { session });
+
+
+    customer.rents.push({
+      movie: {
+        _id: movie._id,
+        title: movie.title,
+      },
+      dateOut: rental.dateOut,
+      dateReturned: rental.dateReturned,
+    })
+    await customer.save();
+
+
+    await session.commitTransaction();
+    console.log('success');
 
     res.send(rental);
+    session.endSession();
   }
   catch (ex) {
+    console.log('error');
+    await session.abortTransaction();
     res.status(500).send('Something failed.');
+  } finally {
+    session.endSession();
   }
 });
 
