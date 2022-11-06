@@ -6,15 +6,17 @@ const Fawn = require('fawn');
 const express = require('express');
 const router = express.Router();
 const config = require('config');
+const admin = require("../middleware/admin");
+const auth = require("../middleware/auth");
 
 const { connection } = require('../startup/db');
 
-router.get('/', async (req, res) => {
+router.get('/', [auth, admin], async (req, res) => {
   const rentals = await Rental.find().sort('-dateOut');
   res.send(rentals);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', [auth], async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -26,7 +28,6 @@ router.post('/', async (req, res) => {
 
   if (movie.numberInStock === 0) return res.status(400).send('Movie not in stock.');
 
-  console.log('filter', customer.rents.filter(rent => rent.movie._id.toString() === movie._id.toString()));
   if (customer.rents.filter(rent => rent.movie._id.toString() === movie._id.toString()).length === 1) {
     return res.status(400).send('You already rented this movie');
   }
@@ -61,15 +62,10 @@ router.post('/', async (req, res) => {
     })
     await customer.save();
 
-
     await session.commitTransaction();
-    console.log('success');
-
     res.send(rental);
-    session.endSession();
   }
   catch (ex) {
-    console.log('error');
     await session.abortTransaction();
     res.status(500).send('Something failed.');
   } finally {
@@ -77,7 +73,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', [auth, admin], async (req, res) => {
   const rental = await Rental.findById(req.params.id);
 
   if (!rental) return res.status(404).send('The rental with the given ID was not found.');
