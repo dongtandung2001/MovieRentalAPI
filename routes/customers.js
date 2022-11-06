@@ -30,8 +30,8 @@ router.put('/:id', async (req, res) => {
   const customer = await Customer.findByIdAndUpdate(req.params.id,
     {
       name: req.body.name,
-      isGold: req.body.isGold,
-      phone: req.body.phone
+      phone: req.body.phone,
+      SSN: req.body.SSN,
     }, { new: true });
   if (req.query.rent === 'true') {
     customer.rents.push(req.body.rent);

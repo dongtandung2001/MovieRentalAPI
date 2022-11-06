@@ -32,14 +32,29 @@ const userSchema = new mongoose.Schema({
 // encapsulating generating token in mongoose models to sync
 // so that update will happen at all places.
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign(
-    {
-      _id: this._id,
-      isAdmin: this.isAdmin,
-      email: this.email,
-    },
-    config.get("jwtPrivateKey")
-  );
+  let token;
+  if (this.customer) {
+    token = jwt.sign(
+      {
+        _id: this._id,
+        isAdmin: this.isAdmin,
+        email: this.email,
+        customer: this.customer._id,
+      },
+      config.get("jwtPrivateKey")
+    );
+  }
+  else {
+    token = jwt.sign(
+      {
+        _id: this._id,
+        isAdmin: this.isAdmin,
+        email: this.email,
+      },
+      config.get("jwtPrivateKey")
+    );
+
+  }
   return token;
 };
 
