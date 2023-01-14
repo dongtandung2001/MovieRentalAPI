@@ -12,7 +12,9 @@ conn.once('open', () => console.info('Connection to Database is successful'));
 module.exports = function () {
   const db = config.get('db');
   console.log('db', db);
-  mongoose.connect(db)
+  mongoose.connect(db, {
+    family: 4
+  })
     .then(() => {
       console.log(`Connected to ${db}`)
     })

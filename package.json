@@ -8,9 +8,11 @@
     "start": "node index.js"
   },
   "engines": {
-    "node": "16.0.0"
+    "node": "18.0.0"
   },
-  "keywords": [],
+  "keywords": [
+    "heroku"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
